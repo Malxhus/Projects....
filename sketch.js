@@ -1,96 +1,41 @@
-var PLAY = 1;
-var END = 0;
-var gameState = PLAY;
-var monkey, monkey_running;
-var banana, bananaImage, obstacle, obstacleImage;
-var FoodGroup, obstacleGroup;
-var score;
-var ground;
-var invisibleGround;
-var survivalTime = 0;
-var Point = 0;
-
-function preload() {
-
-
-  monkey_running = loadAnimation("sprite_0.png", "sprite_1.png", "sprite_2.png", "sprite_3.png", "sprite_4.png", "sprite_5.png", "sprite_6.png", "sprite_7.png", "sprite_8.png");
-  
- 
-
-  bananaImage = loadImage("banana.png");
-  obstacleImage = loadImage("obstacle.png");
-
-}
-
-
+var car,wall;
+var speed,weight;
+var deformation;
 
 function setup() {
-  createCanvas(600, 400);
-
-  monkey = createSprite(90, 305, 10, 10);
-  monkey.scale = 0.1;
-  monkey.addAnimation("running", monkey_running);
-
-  ground = createSprite(300, 380, 600, 90);
-
-  invisibleGround = createSprite(300, 380, 600, 85);
-  invisibleGround.visible = false;
+  createCanvas(1600,400);
+   
+  speed = random(55,90);
+  wieght = random(400,1500);
   
-  FoodGroup = createGroup();
+  car = createSprite(50,200,50,50);
+  car.velocityX = speed;
+  car.shapeColor = color("white");
+
+  wall = createSprite(1200,200,60,height/2);
+  
 }
 
-
-function draw() {
-  background("black");
-
-
-  stroke("white");
-  fill("white"); 
-  text("SURVIVAL:" + survivalTime, 450, 50);
-  survivalTime = survivalTime + Math.round(getFrameRate() / 60);
-
-  text("POINT: " + Point, 40, 50);
-
-
-  if (keyDown("space") && monkey.y >= 200) {
-    monkey.velocityY = -15;
-     
+function draw() 
+{
+  background(0);  
+  if(wall.x - car.x < (car.width + wall.width)/2)
+  {
+    car.velocityX = 0;
   }
-  monkey.velocityY = monkey.velocityY + 0.8;
+  var deformation = 0.5*weight*speed*speed/22509;
 
-
-
-
-
-  monkey.collide(invisibleGround);
-  
-  spawnObstacles();
-  spawnFood();
+  if(deformation>180){
+   car.shapeColor = color(255,0,0);
+  }
+  if(deformation<180 && deformation>100)
+  {
+    car.shapeColor = color(230,230,0);
+  }
+  if(deformation < 100)
+  {
+    car.shapeColor =color(0,255,0);
+  }
   
   drawSprites();
-}
-
-function spawnObstacles() {
-  if (frameCount % 300 === 0) {
-    var Obstacle = createSprite(600, 319, 600, 5);
-    Obstacle.addImage(obstacleImage);
-    Obstacle.scale = 0.2;
-    Obstacle.velocityX = -4;
-  }
-}
-function spawnFood(){
-  if (frameCount % 80 === 0) {
-    var banana = createSprite(600, 120, 40, 10);
-    banana.y = Math.round(random(120, 200));
-    banana.addImage(bananaImage);
-    banana.scale = 0.1 ;
-    banana.velocityX = -3;
-    
-    FoodGroup.add(banana);
-}
-  if(monkey.isTouching(FoodGroup)){
-    FoodGroup.destroyEach();
-    Point = Point + 1;
-  }   
-    
 }
